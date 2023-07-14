@@ -15,7 +15,6 @@ public class LoginDao {
     Conexion cn = new Conexion();
 
     public Empleado Logueo(String dniE, String pwdE) {
-        // System.out.println("dni: " + dniE + " pwd: " + pwdE);
         Empleado emp = new Empleado();
         String sql = "Select * from empleado where dni_empleado=? and contrasena=?";
         try {
