@@ -1,5 +1,6 @@
-package Modelo;
+package Controlador;
 
+import Modelo.Producto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

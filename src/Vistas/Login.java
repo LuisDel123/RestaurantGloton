@@ -7,7 +7,7 @@ package Vistas;
 
 import Modelo.Cliente;
 import Modelo.Empleado;
-import Modelo.LoginDao;
+import Controlador.LoginDao;
 import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

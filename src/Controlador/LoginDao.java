@@ -1,5 +1,7 @@
-package Modelo;
+package Controlador;
 
+import Modelo.Cliente;
+import Modelo.Empleado;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
