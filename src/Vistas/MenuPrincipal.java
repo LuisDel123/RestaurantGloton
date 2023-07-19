@@ -46,7 +46,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         setImageLabel(lblMariscos, "src/Img/Ceviche Portada.jpg");
         setImageLabel(lblPostres, "src/Img/Postres Categoria.jpg");
         setImageLabel(lblBebidas, "src/Img/Bebidas.jpg");
-        System.out.println("El DNI DEL CLIENTE ES pantalla mp: " + dni);
+        
 
     }
 

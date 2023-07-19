@@ -8,8 +8,26 @@ public class Producto {
     private String descripcion_Producto;
     private double precio_Unitario;
     private int tiempo_entregaBase;
+    private int id_Categoria;
 
     public Producto() {
+    }
+
+    public int getId_Categoria() {
+        return id_Categoria;
+    }
+
+    public void setId_Categoria(int id_Categoria) {
+        this.id_Categoria = id_Categoria;
+    }
+
+    public Producto(int id_Producto, String nombre_Producto, String descripcion_Producto, double precio_Unitario, int tiempo_entregaBase, int id_Categoria) {
+        this.id_Producto = id_Producto;
+        this.nombre_Producto = nombre_Producto;
+        this.descripcion_Producto = descripcion_Producto;
+        this.precio_Unitario = precio_Unitario;
+        this.tiempo_entregaBase = tiempo_entregaBase;
+        this.id_Categoria = id_Categoria;
     }
 
     public Producto(int id_Producto, String nombre_Producto, String descripcion_Producto, double precio_Unitario, int tiempo_entregaBase) {
