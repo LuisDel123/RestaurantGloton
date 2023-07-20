@@ -1,7 +1,7 @@
 package Vistas;
 
 import Modelo.Producto;
-import Modelo.ProductoDao;
+import Controlador.ProductoDao;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public class PanelListarProductos1 extends javax.swing.JPanel {
 
         lblCategoria.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         lblCategoria.setForeground(new java.awt.Color(102, 0, 0));
-        lblCategoria.setText("Categoria");
+        lblCategoria.setText("Platos");
         panelContentListar.add(lblCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
 
         lblPlato1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/1.jpg"))); // NOI18N

@@ -7,7 +7,7 @@ package Vistas;
 
 import Modelo.Cliente;
 import Modelo.Empleado;
-import Modelo.LoginDao;
+import Controlador.LoginDao;
 import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -46,11 +46,8 @@ public class Login extends javax.swing.JFrame {
         String pwdE = txtcontraLogin.getText();
         if (!"".equals(dniE) || !"".equals(pwdE)) {
             emp = login.Logueo(dniE, pwdE);
-            System.out.println("Punto 2");
-            System.out.println("Dni:" + emp.getDni_emp());
-            System.out.println("contra :" + emp.getPwd_emp());
             if (emp.getDni_emp() != null && emp.getPwd_emp() != null) {
-                MenuEmpleado me = new MenuEmpleado();
+                MenuEmpleado me = new MenuEmpleado(dniE);
                 me.setVisible(true);
                 dispose();
 

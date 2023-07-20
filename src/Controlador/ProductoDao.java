@@ -1,5 +1,6 @@
-package Modelo;
+package Controlador;
 
+import Modelo.Producto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.util.List;
 public class ProductoDao {
     Producto prodXnombre=new Producto();
     List<Producto> productoscat = new ArrayList<>();
+    List<Producto> listproductos = new ArrayList<>();
     List<Producto> productosfav = new ArrayList<>();
     Double tpromedio=0.0;
     Connection ncon;
@@ -70,7 +72,6 @@ public class ProductoDao {
                 prodXnombre.setDescripcion_Producto(rs.getString("descripcion_Producto"));
                 prodXnombre.setPrecio_Unitario(rs.getDouble("precio_Unitario"));
                 prodXnombre.setTiempo_entregaBase(rs.getInt("tiempo_entrega_minutos"));
-                
             }
             ncon.close();
         } catch (SQLException e) {
@@ -103,4 +104,43 @@ public class ProductoDao {
     return productosfav;
     }
     
+    public List<Producto> listarProductos( ) {
+        String sql = "Select * from Producto ";
+
+        try {
+            ncon = cn.getConexion();
+            ps = ncon.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Producto producto = new Producto();
+                producto.setId_Producto(rs.getInt("id_Producto"));
+                producto.setNombre_Producto(rs.getString("nombre_Producto"));
+                producto.setDescripcion_Producto(rs.getString("descripcion_Producto"));
+                producto.setPrecio_Unitario(rs.getDouble("precio_Unitario"));
+                producto.setTiempo_entregaBase(rs.getInt("tiempo_entrega_minutos"));
+                producto.setId_Categoria(rs.getInt("id_Categoria_Prod"));
+                listproductos.add(producto);
+            }
+            ncon.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    return listproductos;
+    }
+    public void crearProducto(Producto pro) {
+        String sql = "INSERT INTO producto  (nombre_Producto, descripcion_Producto, precio_unitario, tiempo_entrega_minutos, id_Categoria_Prod) VALUES (?, ?, ?, ?, ?);";
+        try {
+            ncon = cn.getConexion();
+            ps = ncon.prepareStatement(sql);
+            ps.setString(1, pro.getNombre_Producto());
+            ps.setString(2,pro.getDescripcion_Producto());
+            ps.setDouble(3,pro.getPrecio_Unitario());
+            ps.setInt(4,pro.getTiempo_entregaBase());
+            ps.setInt(5,pro.getId_Categoria());
+            ps.executeUpdate();
+            ncon.close();
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
 }
