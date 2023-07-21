@@ -5,6 +5,8 @@ import Modelo.Producto;
 import Controlador.ProductoDao;
 import Modelo.Pedido;
 import java.awt.Image;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Icon;
@@ -17,15 +19,14 @@ import javax.swing.table.DefaultTableModel;
 
 public class MenuEmpleado extends javax.swing.JFrame {
 
+    int fila = 0;
     List<Producto> productosMP = new ArrayList<>();
     List<Pedido> pedidosME = new ArrayList<>();
     String dni;
     Producto p = new Producto();
     Pedido pe = new Pedido();
-    PedidoDao pedao = new PedidoDao();
+    PedidoDao pedao = PedidoDao.getInstance();
     ProductoDao pdao = new ProductoDao();
-    DefaultTableModel modelProd = new DefaultTableModel();
-    DefaultTableModel modelPedid = new DefaultTableModel();
 
     public String getDni() {
         return dni;
@@ -39,7 +40,6 @@ public class MenuEmpleado extends javax.swing.JFrame {
         initComponents();
         setDni(dniC);
         setResizable(false);
-        modelPedid = (DefaultTableModel) TablePedido.getModel();
         ListarPedidos();
         setImageLabel(lblLogoME, "src/Img/IconRes.png");
     }
@@ -49,16 +49,19 @@ public class MenuEmpleado extends javax.swing.JFrame {
     }
 
     public void LimpiarTablePed() {
-        int rowCount = modelPedid.getRowCount();
-        for (int i = rowCount-1; i >=0; i--) {
-            modelPedid.removeRow(i);
+        DefaultTableModel modelPedidlimpiar = new DefaultTableModel();
+        modelPedidlimpiar = (DefaultTableModel) TablePedido.getModel();
+        int rowCount = modelPedidlimpiar.getRowCount();
+        for (int i = rowCount - 1; i >= 0; i--) {
+            modelPedidlimpiar.removeRow(i);
         }
-       
     }
 
     public void LimpiarTableProd() {
-        for (int i = 0; i < modelProd.getRowCount(); i++) {
-            modelProd.removeRow(i);
+        DefaultTableModel modelProdLimp = new DefaultTableModel();
+        modelProdLimp = (DefaultTableModel) TableProducto.getModel();
+        for (int i = 0; i < modelProdLimp.getRowCount(); i++) {
+            modelProdLimp.removeRow(i);
             i = i - 1;
         }
     }
@@ -80,6 +83,7 @@ public class MenuEmpleado extends javax.swing.JFrame {
     }
 
     public void ListarProductos() {
+        DefaultTableModel modelProd = new DefaultTableModel();
         List<Producto> listarprod = pdao.listarProductos();
         modelProd = (DefaultTableModel) TableProducto.getModel();
         Object[] ob = new Object[6];
@@ -119,16 +123,22 @@ public class MenuEmpleado extends javax.swing.JFrame {
     }
 
     public void ListarPedidos() {
-        List<Pedido> listarped = pedao.ListarTodosPedidos();
+        DefaultTableModel modelPedid = new DefaultTableModel();
+        List<Pedido> listarped = new ArrayList<>();
+        listarped = pedao.ListarTodosPedidos();
         modelPedid = (DefaultTableModel) TablePedido.getModel();
-        Object[] ob = new Object[7];
+        Object[] ob = new Object[8];
         for (int i = 0; i < listarped.size(); i++) {
             ob[0] = listarped.get(i).getId_Pedido();
             ob[1] = listarped.get(i).getProducto_Pedido();
             ob[2] = listarped.get(i).getCantidad();
             ob[3] = listarped.get(i).getCostoTotal();
             ob[4] = listarped.get(i).getHoraRegistro();
-            ob[5] = listarped.get(i).getHoraEntrega();
+            if (listarped.get(i).getHoraEntrega() != null) {
+                ob[5] = listarped.get(i).getHoraEntrega();
+            } else {
+                ob[5] = "             - ";
+            }
             ob[6] = listarped.get(i).getEstado_Pedido();
             modelPedid.addRow(ob);
         }
@@ -148,6 +158,8 @@ public class MenuEmpleado extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnPedidos = new javax.swing.JButton();
         btnProductos = new javax.swing.JButton();
@@ -169,8 +181,8 @@ public class MenuEmpleado extends javax.swing.JFrame {
         txtProductoPedido = new javax.swing.JTextField();
         txtHoraEntrega = new javax.swing.JTextField();
         btnEntrega = new javax.swing.JButton();
-        txtEstadoPedido = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
+        cbxEstado = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -199,6 +211,16 @@ public class MenuEmpleado extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(255, 0, 0));
         jLabel8.setText("El Glotón");
 
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/SALIR.PNG"))); // NOI18N
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel13.setText("SALIR");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -206,7 +228,13 @@ public class MenuEmpleado extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(367, Short.MAX_VALUE)
                 .addComponent(jLabel8)
-                .addGap(444, 444, 444))
+                .addGap(384, 384, 384)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel13))
+                .addGap(20, 20, 20))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,6 +242,11 @@ public class MenuEmpleado extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(35, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jLabel13))
         );
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, 1030, 120));
@@ -246,11 +279,11 @@ public class MenuEmpleado extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addComponent(btnPedidos))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(25, 25, 25)
-                        .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(btnPedidos)))
                 .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -274,13 +307,18 @@ public class MenuEmpleado extends javax.swing.JFrame {
                 "Id Pedido", "Producto", "Cantidad", "Costo", "Hora Registro", "Hora Entrega", "Estado"
             }
         ));
+        TablePedido.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TablePedidoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TablePedido);
 
         jLabel5.setText("Producto:");
 
         jLabel6.setText("Cantidad:");
 
-        jLabel7.setText("Dni:");
+        jLabel7.setText("ID Pedido");
 
         Costo.setText("Costo:");
 
@@ -288,19 +326,27 @@ public class MenuEmpleado extends javax.swing.JFrame {
 
         jLabel10.setText("Hora Entrega:");
 
+        txtCostoPedido.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtCostoPedido.setEnabled(false);
 
+        txtHoraRegistro.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtHoraRegistro.setEnabled(false);
 
+        txtCantidadPedido.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtCantidadPedido.setEnabled(false);
 
+        txtdniPedido.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtdniPedido.setEnabled(false);
 
+        txtProductoPedido.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtProductoPedido.setEnabled(false);
 
+        txtHoraEntrega.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtHoraEntrega.setEnabled(false);
 
-        btnEntrega.setText("Entregado");
+        btnEntrega.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnEntrega.setText("Entregar");
+        btnEntrega.setEnabled(false);
         btnEntrega.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEntregaActionPerformed(evt);
@@ -308,6 +354,15 @@ public class MenuEmpleado extends javax.swing.JFrame {
         });
 
         jLabel11.setText("Estado:");
+
+        cbxEstado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        cbxEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ENTREGADO", "PENDIENTE" }));
+        cbxEstado.setEnabled(false);
+        cbxEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxEstadoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -339,12 +394,12 @@ public class MenuEmpleado extends javax.swing.JFrame {
                                     .addComponent(txtHoraEntrega)
                                     .addComponent(txtCostoPedido)
                                     .addComponent(txtHoraRegistro)
-                                    .addComponent(txtEstadoPedido, javax.swing.GroupLayout.Alignment.TRAILING))))
+                                    .addComponent(cbxEstado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(18, 18, 18))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(80, 80, 80)
                         .addComponent(btnEntrega)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 129, Short.MAX_VALUE)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 731, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -380,8 +435,8 @@ public class MenuEmpleado extends javax.swing.JFrame {
                     .addComponent(txtHoraEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtEstadoPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11))
+                    .addComponent(jLabel11)
+                    .addComponent(cbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(36, 36, 36)
                 .addComponent(btnEntrega)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -504,7 +559,11 @@ public class MenuEmpleado extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntregaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntregaActionPerformed
-        // TODO add your handling code here:
+        if (cbxEstado.getSelectedItem().equals("ENTREGADO")) {
+            pedao.actualizarPedido(fila+1, txtHoraEntrega.getText());
+            LimpiarTablePed();
+            ListarPedidos();
+        } 
     }//GEN-LAST:event_btnEntregaActionPerformed
 
     private void btnIngresarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarProductoActionPerformed
@@ -546,17 +605,49 @@ public class MenuEmpleado extends javax.swing.JFrame {
     }//GEN-LAST:event_btnIngresarProductoActionPerformed
 
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
-
         LimpiarTableProd();
-        jTabbedPane1.setSelectedIndex(1);
         ListarProductos();
-        
+        jTabbedPane1.setSelectedIndex(1);
+
     }//GEN-LAST:event_btnProductosActionPerformed
 
     private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
         LimpiarTablePed();
-        jTabbedPane1.setSelectedIndex(0); 
+        ListarPedidos();
+        jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_btnPedidosActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Login lg = new Login();
+        lg.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void TablePedidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablePedidoMouseClicked
+        fila = TablePedido.rowAtPoint(evt.getPoint());
+        txtdniPedido.setText(TablePedido.getValueAt(fila, 0).toString());
+        txtProductoPedido.setText(TablePedido.getValueAt(fila, 1).toString());
+        txtCantidadPedido.setText(TablePedido.getValueAt(fila, 2).toString());
+        txtCostoPedido.setText(TablePedido.getValueAt(fila, 3).toString());
+        txtHoraRegistro.setText(TablePedido.getValueAt(fila, 4).toString());
+        if (TablePedido.getValueAt(fila, 5).toString().equals("             - ")) {
+            LocalDateTime fechaHoraReg = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String hora_entrega = fechaHoraReg.format(formatter);
+            txtHoraEntrega.setText(hora_entrega);
+            cbxEstado.setSelectedItem("PENDIENTE");
+            cbxEstado.setEnabled(true);
+            btnEntrega.setEnabled(true);
+        } else {
+            txtHoraEntrega.setText(TablePedido.getValueAt(fila, 5).toString());
+            cbxEstado.setSelectedItem("ETREGADO");
+        }
+
+    }//GEN-LAST:event_TablePedidoMouseClicked
+
+    private void cbxEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxEstadoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxEstadoActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -602,10 +693,13 @@ public class MenuEmpleado extends javax.swing.JFrame {
     private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
     private javax.swing.JComboBox<String> cbxCat;
+    private javax.swing.JComboBox<String> cbxEstado;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -626,7 +720,6 @@ public class MenuEmpleado extends javax.swing.JFrame {
     private javax.swing.JTextField txtCostoPedido;
     private javax.swing.JTextField txtCostoProducto;
     private javax.swing.JTextField txtDescripcionProducto;
-    private javax.swing.JTextField txtEstadoPedido;
     private javax.swing.JTextField txtHoraEntrega;
     private javax.swing.JTextField txtHoraRegistro;
     private javax.swing.JTextField txtNombreProducto;
